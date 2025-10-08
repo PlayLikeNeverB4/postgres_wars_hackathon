@@ -100,10 +100,12 @@ function App() {
           </InputGroupAddon>
         </InputGroup>
       </div>
-      <div className="text-neutral-500 text-sm gap-2 flex flex-col items-center">
-        <h2 className="text-base">Previous kings</h2>
-        {prevKings.map(king => <div key={king.updated_at}>{king.name.substring(0, 50)}</div>)}
-      </div>
+      {prevKings.length > 0 && (
+        <div className="text-neutral-500 text-sm gap-2 flex flex-col items-center">
+          <h2 className="text-base">Previous kings</h2>
+          {prevKings.map(king => <div key={king.updated_at}>{king.name.substring(0, 50)}</div>)}
+        </div>
+      )}
     </main>
   )
 }
