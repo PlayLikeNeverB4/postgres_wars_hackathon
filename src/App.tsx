@@ -12,6 +12,9 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 
+import { formatDistanceToNowStrict, parseISO } from 'date-fns'
+import { utc } from "@date-fns/utc";
+
 const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PSQL_COMMAND = `psql '${DATABASE_URL}'`
 
@@ -32,25 +35,40 @@ const useCopyToClipboard = () => {
   }
 }
 
-const fetchStuff = async () => {
-  const sql = neon(DATABASE_URL)
-  const data = await sql`
-    SELECT version()
-  `
-  console.log(data)
+interface King {
+  name: string;
+  updated_at: string;
 }
 
 function App() {
   const { copyToClipboard, isCopied } = useCopyToClipboard()
-  const king = 'George';
+  const [king, setKing] = useState<King>()
+
+  const fetchUpdates = useCallback(async () => {
+    const sql = neon(DATABASE_URL)
+    const res = await sql`SELECT name, updated_at::text FROM owners LIMIT 1`
+    setKing(res[0] as King)
+  }, [])
 
   useEffect(() => {
-    fetchStuff()
-  }, [])
+    fetchUpdates()
+    const interval = setInterval(() => {
+      fetchUpdates()
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [fetchUpdates])
 
   return (
     <main className="w-screen h-screen dark bg-background text-foreground flex flex-col gap-6 justify-center items-center">
-      <h1 className="text-4xl">King of the hill: <span className="text-red-400">{king}</span></h1>
+      <h1 className="text-4xl flex flex-col items-center gap-3">
+        <div>King of the hill ⚔️</div>
+        <span className="text-red-400 flex flex-col gap items-center" dangerouslySetInnerHTML={{__html: king?.name ?? ''}} />
+        {king?.updated_at !== undefined && (
+          <div className="text-sm">
+            (for {formatDistanceToNowStrict(parseISO(king.updated_at, { in: utc }))})
+          </div>
+        )}
+      </h1>
       <div className="w-screen px-50">
         <InputGroup>
           <InputGroupInput value={PSQL_COMMAND} readOnly className="font-mono" />
