@@ -12,7 +12,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 
-const DATABASE_URL = 'postgresql://neondb_owner:npg_jS9oZer0mcNT@ep-holy-moon-a8hho9rg-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require'
+const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PSQL_COMMAND = `psql '${DATABASE_URL}'`
 
 const useCopyToClipboard = () => {
