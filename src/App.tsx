@@ -52,7 +52,7 @@ function App() {
     const newKing = res[0] as King;
     setKing(king => {
       if (newKing?.name === king?.name) {
-        return king
+        return newKing
       }
       setPrevKings(prevKings => {
         if (king?.name !== prevKings[0]?.name) {
