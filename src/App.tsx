@@ -48,7 +48,7 @@ function App() {
 
   const fetchUpdates = useCallback(async () => {
     const sql = neon(DATABASE_URL)
-    const res = await sql`SELECT name, updated_at::text FROM owners LIMIT 1`
+    const res = await sql`SELECT name, updated_at::text FROM kings LIMIT 1`
     const newKing = res[0] as King;
     setKing(king => {
       if (newKing?.name === king?.name) {
