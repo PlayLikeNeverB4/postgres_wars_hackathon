@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { neon } from '@neondatabase/serverless'
+import { compact } from 'lodash-es'
 
 import {
   IconCheck,
@@ -43,11 +44,24 @@ interface King {
 function App() {
   const { copyToClipboard, isCopied } = useCopyToClipboard()
   const [king, setKing] = useState<King>()
+  const [prevKings, setPrevKings] = useState<King[]>([])
 
   const fetchUpdates = useCallback(async () => {
     const sql = neon(DATABASE_URL)
     const res = await sql`SELECT name, updated_at::text FROM owners LIMIT 1`
-    setKing(res[0] as King)
+    const newKing = res[0] as King;
+    setKing(king => {
+      if (newKing?.name === king?.name) {
+        return king
+      }
+      setPrevKings(prevKings => {
+        if (king?.name !== prevKings[0]?.name) {
+          return compact([king, ...prevKings.slice(0, 4)])
+        }
+        return prevKings
+      })
+      return newKing
+    })
   }, [])
 
   useEffect(() => {
@@ -85,6 +99,10 @@ function App() {
             </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
+      </div>
+      <div className="text-neutral-500 text-sm gap-2 flex flex-col items-center">
+        <h2 className="text-base">Previous kings</h2>
+        {prevKings.map(king => <div key={king.updated_at}>{king.name.substring(0, 50)}</div>)}
       </div>
     </main>
   )
