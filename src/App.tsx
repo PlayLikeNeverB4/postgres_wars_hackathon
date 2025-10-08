@@ -69,7 +69,7 @@ function App() {
           </div>
         )}
       </h1>
-      <div className="w-screen px-50">
+      <div className="w-screen px-105">
         <InputGroup>
           <InputGroupInput value={PSQL_COMMAND} readOnly className="font-mono" />
           <InputGroupAddon align="inline-end">
